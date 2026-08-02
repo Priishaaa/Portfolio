@@ -31,9 +31,9 @@ export default function Contact(){
           <span>&copy; {new Date().getFullYear()} Prisha</span>
           <div className="footer-links">
             {/* swap these two placeholder URLs for your real profile links */}
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" data-cursor="link">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/prisha-sharath-007994215/" target="_blank" rel="noreferrer" data-cursor="link">LinkedIn</a>
             <a href="/Prisha-S-Resume.pdf" target="_blank" rel="noreferrer" data-cursor="link">Resume</a>
-            <a href="https://behance.net" target="_blank" rel="noreferrer" data-cursor="link">Behance</a>
+            <a href="https://www.behance.net/prishasharath" target="_blank" rel="noreferrer" data-cursor="link">Behance</a>
           </div>
         </div>
       </div>
