@@ -1,0 +1,185 @@
+.intro-card-scene{
+  position: relative;
+  height: 140vh;
+  background: var(--ink);
+}
+
+.intro-card-sticky{
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.intro-card-scene::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(176, 141, 90, 0.12), transparent 55%);
+  pointer-events: none;
+}
+
+.intro-card-perspective{
+  perspective: 1400px;
+}
+
+.intro-card{
+  position: relative;
+  width: min(440px, 88vw);
+  min-height: min(600px, 72vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(2.75rem, 5vw, 3.5rem) clamp(2rem, 5vw, 2.75rem) clamp(2rem, 4vw, 2.5rem);
+  border-radius: 20px;
+  background: linear-gradient(160deg, #fbf8f2 0%, #f2ead9 100%);
+  border: 1px solid rgba(12, 12, 13, 0.08);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.55);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+/* faint blueprint-style dot grid so the card doesn't read as a plain box */
+.intro-card-grid{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: radial-gradient(rgba(12,12,13,0.08) 1px, transparent 1px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(circle at 30% 20%, black, transparent 75%);
+}
+
+.intro-card-corner{
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  transform: rotate(18deg);
+  opacity: 0.6;
+}
+
+.intro-card-ring{
+  position: absolute;
+  bottom: -40px;
+  left: -40px;
+  width: 130px;
+  height: 130px;
+  border: 1px dashed rgba(176, 141, 90, 0.35);
+  border-radius: 50%;
+}
+
+.intro-card-diagonal{
+  position: absolute;
+  top: 0;
+  right: 22%;
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(180deg, rgba(176, 141, 90, 0.4), transparent);
+  transform: rotate(20deg);
+}
+
+/* a small, cohesive set of icon-nodes orbiting the card -- all the same
+   ring-frame treatment, so they read as one deliberate accent rather than
+   scattered marks */
+.intro-node{
+  position: absolute;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(242, 240, 236, 0.03);
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.intro-node-a{ top: 8%; left: 8%; }
+.intro-node-b{ top: 12%; right: 6%; }
+.intro-node-c{ bottom: 14%; right: 10%; width: 26px; height: 26px; }
+.intro-node-d{ bottom: 8%; left: 10%; }
+
+@media (max-width: 720px){
+  .intro-node{ display: none; }
+}
+
+.intro-card-eyebrow{
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9c7a45;
+  margin-bottom: 1.25rem;
+}
+
+.intro-card-title{
+  position: relative;
+  z-index: 1;
+  margin: 0 0 1.5rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #17140f;
+}
+
+.intro-card-title .italic{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: #a9782f;
+}
+
+.intro-card-divider{
+  position: relative;
+  z-index: 1;
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.intro-card-location{
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: #5c5648;
+}
+
+.intro-card-location svg{ color: #a9782f; flex-shrink: 0; }
+
+.intro-card-skills{
+  position: relative;
+  z-index: 1;
+  margin: 2rem -2.75rem -2rem;
+}
+
+.intro-card-skills .marquee{
+  border-color: rgba(12, 12, 13, 0.12);
+}
+
+.intro-card-skills .marquee-item{
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: #5c5648;
+}
+
+.intro-card-skills .marquee-dot{ color: #a9782f; }

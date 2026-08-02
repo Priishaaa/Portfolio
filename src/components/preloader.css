@@ -1,0 +1,27 @@
+.preloader{
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.preloader-panel{
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: bottom;
+}
+
+.preloader-count{
+  position: absolute;
+  bottom: clamp(1.5rem, 4vw, 3rem);
+  left: clamp(1.5rem, 4vw, 3rem);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: var(--fg-dim);
+}
+
+.preloader-count span{
+  font-variant-numeric: tabular-nums;
+}

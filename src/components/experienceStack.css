@@ -1,0 +1,212 @@
+.exp-scene{
+  position: relative;
+  padding: clamp(9rem, 14vw, 11rem) 0 clamp(8rem, 14vw, 11rem);
+  background: var(--ink);
+}
+
+.exp-container{
+  display: block;
+}
+
+.exp-scene .label{ margin-bottom: 1.5rem; }
+
+.exp-heading{
+  position: relative;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  color: var(--fg);
+  margin: 0 0 clamp(3.5rem, 8vw, 5.5rem);
+  max-width: 20ch;
+}
+
+.exp-heading-w-wrap{
+  position: relative;
+  display: inline-block;
+}
+
+.exp-sticky-note{
+  position: absolute;
+  top: -0.3em;
+  left: -0.15em;
+  width: 1.15em;
+  height: 1.15em;
+  background: #f4d879;
+  border-radius: 2px;
+  transform: rotate(-8deg);
+  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+.exp-stack{
+  position: relative;
+  width: min(380px, 82vw);
+  height: 180px;
+  margin: 0 auto;
+  transition: height 0.5s var(--ease);
+}
+
+.exp-stack.has-expanded{
+  height: 520px;
+}
+
+.exp-card{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  border-radius: 14px;
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.6);
+  cursor: none;
+  transform-origin: top left;
+  text-align: left;
+}
+
+.exp-card-cream{
+  background: linear-gradient(160deg, #fbf8f2, #efe6d3);
+  border: 1px solid rgba(12, 12, 13, 0.08);
+}
+
+.exp-card-amber{
+  background: linear-gradient(160deg, #e3a750, #c9843a);
+  border: 1px solid rgba(12, 12, 13, 0.12);
+}
+
+.exp-corner-tag{
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #f6f4f0;
+  background: #17140f;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  transform: rotate(6deg);
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.5);
+}
+
+.exp-card-head{
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.exp-card-cream .exp-company,
+.exp-card-amber .exp-company{
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.3rem;
+  color: #17140f;
+}
+
+.exp-card-cream .exp-role{ font-size: 0.8rem; color: #5c5648; }
+.exp-card-amber .exp-role{ font-size: 0.8rem; color: #3a2410; }
+
+.exp-detail{
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.5s var(--ease);
+}
+
+.exp-detail.is-open{ grid-template-rows: 1fr; }
+
+.exp-detail-inner{
+  overflow: hidden;
+  min-height: 0;
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(12, 12, 13, 0.12);
+}
+
+.exp-detail-inner ul{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.exp-detail-inner li{
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #3a3527;
+}
+
+.exp-detail-inner li::before{
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #17140f;
+}
+
+.exp-hint{
+  margin-top: 2rem;
+  font-size: 0.78rem;
+  color: var(--fg-dim);
+}
+
+/* hanging paper note, tucked under the navbar's right edge */
+.best-work-hook-wrap{
+  position: absolute;
+  top: clamp(6rem, 12vw, 7.5rem);
+  right: clamp(1.25rem, 5vw, 4rem);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.best-work-hook{
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--fg-dim);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+}
+
+.best-work-string{
+  width: 1px;
+  height: 22px;
+  background: var(--fg-dim);
+  opacity: 0.5;
+}
+
+.best-work-hint{
+  position: relative;
+  display: block;
+  max-width: 220px;
+  padding: 1.1rem 1.25rem 1.25rem;
+  clip-path: polygon(0 0, 100% 0, 100% 94%, 92% 100%, 84% 94%, 76% 100%, 68% 94%, 60% 100%, 52% 94%, 44% 100%, 36% 94%, 28% 100%, 20% 94%, 12% 100%, 4% 94%, 0 100%);
+  background: linear-gradient(160deg, #fbf8f2, #efe6d3);
+  color: #3a3527;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.5);
+}
+
+.best-work-pin{
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 780px){
+  .best-work-hook-wrap{ display: none; }
+}

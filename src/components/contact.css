@@ -1,0 +1,46 @@
+.contact{
+  padding: clamp(6rem, 12vw, 9rem) 0 clamp(2.5rem, 6vw, 4rem);
+  background: var(--ink);
+}
+
+.contact .label{ margin-bottom: 1.75rem; }
+
+.contact-title{
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 6.5vw, 4.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0 0 2.5rem;
+  color: var(--fg);
+}
+
+.contact-email{
+  display: inline-block;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4rem;
+  color: var(--fg);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.contact-email:hover{
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.footer-row{
+  margin-top: clamp(3rem, 8vw, 5rem);
+  padding: 1.75rem 0 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--fg-dim);
+}
+
+.footer-links{ display: flex; gap: 1.75rem; }
+.footer-links a:hover{ color: var(--fg); }
