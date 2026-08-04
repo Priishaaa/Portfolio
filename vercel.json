@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "prisha-portfolio-ebon.vercel.app"
+        }
+      ],
+      "destination": "https://prishadixit.com/:path*",
+      "permanent": true
+    }
+  ]
+}
