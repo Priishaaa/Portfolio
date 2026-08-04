@@ -16,8 +16,8 @@ export default function CustomCursor(){
   const [label, setLabel] = useState('');
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const springX = useSpring(x, { damping: 30, stiffness: 260, mass: 0.5 });
-  const springY = useSpring(y, { damping: 30, stiffness: 260, mass: 0.5 });
+  const springX = useSpring(x, { damping: 35, stiffness: 700, mass: 0.2 });
+  const springY = useSpring(y, { damping: 35, stiffness: 700, mass: 0.2 });
 
   useEffect(() => {
     const isFine = window.matchMedia('(pointer: fine)').matches;
