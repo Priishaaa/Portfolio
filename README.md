@@ -1,4 +1,4 @@
-# Prisha — Portfolio Frontend
+# Prisha — Portfolio
 
 Premium, minimal, and built around motion rather than decoration: a
 near-monochrome canvas (ink black / warm paper) with a single restrained
