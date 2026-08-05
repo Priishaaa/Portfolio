@@ -59,11 +59,11 @@
   text-decoration-color: rgba(176, 141, 90, 0.5);
   text-shadow: 0 0 18px rgba(176, 141, 90, 0.35);
   cursor: none;
-  transition: text-shadow 0.3s var(--ease), text-decoration-color 0.3s var(--ease);
+  transition: text-shadow 0.4s var(--ease), text-decoration-color 0.4s var(--ease);
 }
 
-.about-hot-word:hover{
-  text-shadow: 0 0 26px rgba(176, 141, 90, 0.55);
+.about-hot-word.is-glowing{
+  text-shadow: 0 0 30px rgba(176, 141, 90, 0.75);
   text-decoration-color: var(--accent);
 }
 

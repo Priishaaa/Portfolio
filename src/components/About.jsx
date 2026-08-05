@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import './about.css';
 
-// A small curled hint-arrow (not a straight one) that sits above a hoverable
-// word, nudging visitors to actually hover it. `flip` mirrors it for words
-// on the right side of the line.
+const SEQUENCE = ['ideas', 'meaningful'];
+const GLOW_MS = 900;
+const HOLD_MS = 2600;
+
+// A small curled hint-arrow (not a straight one) that sits above a
+// highlighted word. `flip` mirrors it for words on the right side of the line.
 function CurlyArrow({ className = '', flip = false }){
   return (
     <svg
@@ -34,8 +37,8 @@ function CurlyArrow({ className = '', flip = false }){
   );
 }
 
-// The two little animated sequences that fill the blank right-hand panel.
-// Nothing shows until a word is actively hovered.
+// The two little animated sequences that fill the blank right-hand panel,
+// shown automatically as each word takes its turn glowing.
 function IdeasReveal(){
   return (
     <motion.div
@@ -116,7 +119,34 @@ function MeaningfulReveal(){
 }
 
 export default function About(){
-  const [hovered, setHovered] = useState(null);
+  const [started, setStarted] = useState(false);
+  const [glowing, setGlowing] = useState(null);
+  const [revealed, setRevealed] = useState(null);
+
+  useEffect(() => {
+    if (!started) return;
+    let cancelled = false;
+    const timeouts = [];
+
+    const runStep = (i) => {
+      if (cancelled) return;
+      const word = SEQUENCE[i % SEQUENCE.length];
+      setGlowing(word);
+      setRevealed(null);
+      timeouts.push(setTimeout(() => {
+        if (cancelled) return;
+        setRevealed(word);
+        timeouts.push(setTimeout(() => runStep(i + 1), HOLD_MS));
+      }, GLOW_MS));
+    };
+
+    runStep(0);
+
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+    };
+  }, [started]);
 
   return (
     <section id="about" className="about">
@@ -124,6 +154,7 @@ export default function About(){
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
+          onViewportEnter={() => setStarted(true)}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
@@ -131,13 +162,7 @@ export default function About(){
           <p className="about-quote">
             I enjoy turning{' '}
             <span className="about-hover-wrap">
-              <CurlyArrow className="curly-arrow-ideas" />
-              <span
-                className="about-hot-word"
-                onMouseEnter={() => setHovered('ideas')}
-                onMouseLeave={() => setHovered((h) => (h === 'ideas' ? null : h))}
-                data-cursor="link"
-              >
+              <span className={`about-hot-word ${glowing === 'ideas' ? 'is-glowing' : ''}`}>
                 IDEAS
               </span>
             </span>{' '}
@@ -145,12 +170,7 @@ export default function About(){
             project is another chance to learn, create, and make something{' '}
             <span className="about-hover-wrap">
               <CurlyArrow className="curly-arrow-meaningful" flip />
-              <span
-                className="about-hot-word"
-                onMouseEnter={() => setHovered('meaningful')}
-                onMouseLeave={() => setHovered((h) => (h === 'meaningful' ? null : h))}
-                data-cursor="link"
-              >
+              <span className={`about-hot-word ${glowing === 'meaningful' ? 'is-glowing' : ''}`}>
                 MEANINGFUL
               </span>
             </span>.
@@ -165,8 +185,8 @@ export default function About(){
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
         >
           <AnimatePresence mode="wait">
-            {hovered === 'ideas' && <IdeasReveal key="ideas" />}
-            {hovered === 'meaningful' && <MeaningfulReveal key="meaningful" />}
+            {revealed === 'ideas' && <IdeasReveal key="ideas" />}
+            {revealed === 'meaningful' && <MeaningfulReveal key="meaningful" />}
           </AnimatePresence>
         </motion.div>
       </div>
