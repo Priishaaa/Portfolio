@@ -12,6 +12,7 @@ const PROJECTS = [
     description: 'Public Transport App',
     tools: ['Figma', 'User Research', 'Prototyping'],
     station: 'Majestic',
+    url: 'https://www.behance.net/gallery/235221947/Lame-Rides',
   },
   {
     id: 'connect-smart',
@@ -26,6 +27,7 @@ const PROJECTS = [
     description: 'Beauty E-commerce App',
     tools: ['Figma', 'Wireframing', 'Prototyping'],
     station: 'MG Road',
+    url: 'https://www.behance.net/gallery/235214143/MyGlow',
   },
   {
     id: 'flow-sheet',
@@ -33,6 +35,7 @@ const PROJECTS = [
     description: 'Sales Management App',
     tools: ['Figma', 'Wireframing', 'Prototyping'],
     station: 'Cubbon Park',
+    url: 'https://www.behance.net/gallery/235670135/Flow-Sheet',
   },
   {
     id: 'hocon-erp',
@@ -266,7 +269,19 @@ export default function SceneGate(){
                           </li>
                         ))}
                       </ul>
-                      <span className="ts-view-disabled" title="Case study coming soon">View &rarr;</span>
+                      {project.url ? (
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="ts-view"
+                          data-cursor="link"
+                        >
+                          View &rarr;
+                        </a>
+                      ) : (
+                        <span className="ts-view-disabled" title="Case study coming soon">View &rarr;</span>
+                      )}
                     </div>
                   </motion.div>
                 </AnimatePresence>

@@ -340,6 +340,22 @@
   cursor: not-allowed;
 }
 
+.ts-view{
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(176, 141, 90, 0.5);
+  text-underline-offset: 3px;
+  cursor: none;
+  transition: text-decoration-color 0.3s var(--ease);
+}
+
+.ts-view:hover{
+  text-decoration-color: var(--accent);
+}
+
 /* -- train illustration -- sized to sit inside the scene, not swallow it -- */
 .ts-train{
   position: relative;
