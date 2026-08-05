@@ -20,6 +20,7 @@ const PROJECTS = [
     description: 'Smart Home App',
     tools: ['Figma', 'Prototyping', 'Interaction Design'],
     station: 'Indiranagar',
+    url: 'https://www.behance.net/gallery/253824175/Connect-Smart',
   },
   {
     id: 'my-glow',
