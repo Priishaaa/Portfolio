@@ -3,8 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import './about.css';
 
 const SEQUENCE = ['ideas', 'meaningful'];
-const GLOW_MS = 900;
-const HOLD_MS = 2600;
+const HOLD_MS = 2800;
 
 // A small curled hint-arrow (not a straight one) that sits above a
 // highlighted word. `flip` mirrors it for words on the right side of the line.
@@ -120,32 +119,18 @@ function MeaningfulReveal(){
 
 export default function About(){
   const [started, setStarted] = useState(false);
-  const [glowing, setGlowing] = useState(null);
-  const [revealed, setRevealed] = useState(null);
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     if (!started) return;
-    let cancelled = false;
-    const timeouts = [];
+    let i = 0;
+    setActive(SEQUENCE[0]);
+    const id = setInterval(() => {
+      i = (i + 1) % SEQUENCE.length;
+      setActive(SEQUENCE[i]);
+    }, HOLD_MS);
 
-    const runStep = (i) => {
-      if (cancelled) return;
-      const word = SEQUENCE[i % SEQUENCE.length];
-      setGlowing(word);
-      setRevealed(null);
-      timeouts.push(setTimeout(() => {
-        if (cancelled) return;
-        setRevealed(word);
-        timeouts.push(setTimeout(() => runStep(i + 1), HOLD_MS));
-      }, GLOW_MS));
-    };
-
-    runStep(0);
-
-    return () => {
-      cancelled = true;
-      timeouts.forEach(clearTimeout);
-    };
+    return () => clearInterval(id);
   }, [started]);
 
   return (
@@ -162,7 +147,7 @@ export default function About(){
           <p className="about-quote">
             I enjoy turning{' '}
             <span className="about-hover-wrap">
-              <span className={`about-hot-word ${glowing === 'ideas' ? 'is-glowing' : ''}`}>
+              <span className={`about-hot-word ${active === 'ideas' ? 'is-glowing' : ''}`}>
                 IDEAS
               </span>
             </span>{' '}
@@ -170,7 +155,7 @@ export default function About(){
             project is another chance to learn, create, and make something{' '}
             <span className="about-hover-wrap">
               <CurlyArrow className="curly-arrow-meaningful" flip />
-              <span className={`about-hot-word ${glowing === 'meaningful' ? 'is-glowing' : ''}`}>
+              <span className={`about-hot-word ${active === 'meaningful' ? 'is-glowing' : ''}`}>
                 MEANINGFUL
               </span>
             </span>.
@@ -185,8 +170,8 @@ export default function About(){
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
         >
           <AnimatePresence mode="wait">
-            {revealed === 'ideas' && <IdeasReveal key="ideas" />}
-            {revealed === 'meaningful' && <MeaningfulReveal key="meaningful" />}
+            {active === 'ideas' && <IdeasReveal key="ideas" />}
+            {active === 'meaningful' && <MeaningfulReveal key="meaningful" />}
           </AnimatePresence>
         </motion.div>
       </div>

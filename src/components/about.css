@@ -52,19 +52,20 @@
 }
 
 .about-hot-word{
-  color: var(--accent);
+  color: var(--ink);
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 5px;
-  text-decoration-color: rgba(176, 141, 90, 0.5);
-  text-shadow: 0 0 18px rgba(176, 141, 90, 0.35);
+  text-decoration-color: rgba(12, 12, 13, 0.18);
+  text-shadow: 0 0 0 rgba(176, 141, 90, 0);
   cursor: none;
-  transition: text-shadow 0.4s var(--ease), text-decoration-color 0.4s var(--ease);
+  transition: color 0.4s var(--ease), text-shadow 0.4s var(--ease), text-decoration-color 0.4s var(--ease);
 }
 
 .about-hot-word.is-glowing{
-  text-shadow: 0 0 30px rgba(176, 141, 90, 0.75);
+  color: var(--accent);
   text-decoration-color: var(--accent);
+  text-shadow: 0 0 30px rgba(176, 141, 90, 0.75);
 }
 
 /* -- the blank-until-hovered reveal panel -- */
