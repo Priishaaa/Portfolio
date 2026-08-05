@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import hushed from '../assets/graphics/hushed.png';
-import wave from '../assets/graphics/wave.png';
-import awPoster from '../assets/graphics/aw-poster.png';
-import brush from '../assets/graphics/brush.png';
+import hushed from '../assets/graphics/hushed.webp';
+import wave from '../assets/graphics/wave.webp';
+import awPoster from '../assets/graphics/aw-poster.webp';
+import brush from '../assets/graphics/brush.webp';
 import './graphicGrid.css';
 
 // Scattered placement for each card when revealed -- rough position (%),

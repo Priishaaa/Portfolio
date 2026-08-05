@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import MagneticButton from './MagneticButton';
 import './hero.css';
-import s1 from "../assets/projects/s1.png";
-import s2 from "../assets/projects/s2.png";
-import s3 from "../assets/projects/s3.png";
-import s4 from "../assets/projects/s4.png";
+import s1 from "../assets/projects/s1.webp";
+import s2 from "../assets/projects/s2.webp";
+import s3 from "../assets/projects/s3.webp";
+import s4 from "../assets/projects/s4.webp";
 
 // Replace `image` with a real screenshot import once you have one, e.g.
 // `image: erpDashboardImg` after `import erpDashboardImg from '../assets/projects/erp-dashboard.png'`.
