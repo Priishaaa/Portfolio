@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import useSmoothScroll from './lib/useSmoothScroll';
 import Preloader from './components/Preloader';
 import CustomCursor from './components/CustomCursor';
@@ -21,6 +22,7 @@ function App(){
         <About />
         <Contact />
       </main>
+      <Analytics />
     </>
   );
 }
