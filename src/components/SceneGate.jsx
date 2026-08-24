@@ -7,6 +7,21 @@ import './sceneGate.css';
 // Each is paired with a Bangalore locality for the route-step flavor.
 const PROJECTS = [
   {
+    id: 'vibe',
+    name: 'Vibe',
+    description: 'Daily Mood-Tracking Social App',
+    tools: ['React', 'Node.js', 'Web Push API'],
+    station: 'Jayanagar',
+    url: 'https://vibe-app-brown.vercel.app',
+  },
+  {
+    id: 'hocon-erp',
+    name: 'Hocon-ERP',
+    description: 'Full-Stack ERP App',
+    tools: ['React.js', 'Node.js', 'PostgreSQL'],
+    station: 'Whitefield',
+  },
+  {
     id: 'lame-rides',
     name: 'Lame Rides',
     description: 'Public Transport App',
@@ -37,21 +52,6 @@ const PROJECTS = [
     tools: ['Figma', 'Wireframing', 'Prototyping'],
     station: 'Cubbon Park',
     url: 'https://www.behance.net/gallery/235670135/Flow-Sheet',
-  },
-  {
-    id: 'hocon-erp',
-    name: 'Hocon-ERP',
-    description: 'Full-Stack ERP App',
-    tools: ['React.js', 'Node.js', 'PostgreSQL'],
-    station: 'Whitefield',
-  },
-  {
-    id: 'vibe',
-    name: 'Vibe',
-    description: 'Daily Mood-Tracking Social App',
-    tools: ['React', 'Node.js', 'Web Push API'],
-    station: 'Jayanagar',
-    url: 'https://vibe-app-brown.vercel.app',
   },
 ];
 
