@@ -72,7 +72,7 @@ export default function IntroCard(){
             <span className="intro-card-eyebrow"> &middot; </span>
 
             <h2 className="intro-card-title">
-              <span className="italic">Creative</span> Developer
+              <span className="italic">Product</span> Engineer
             </h2>
 
             <div className="intro-card-divider" aria-hidden="true" />
