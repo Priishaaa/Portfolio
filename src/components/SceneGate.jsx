@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import './sceneGate.css';
 
-// Six real projects, trimmed to what a recruiter needs at a glance --
+// Seven real projects, trimmed to what a recruiter needs at a glance --
 // full detail lives on the resume, not crammed onto a departure board.
 // Each is paired with a Bangalore locality for the route-step flavor.
 const PROJECTS = [
@@ -20,6 +20,14 @@ const PROJECTS = [
     description: 'Full-Stack ERP App',
     tools: ['React.js', 'Node.js', 'PostgreSQL'],
     station: 'Whitefield',
+  },
+  {
+    id: 'mentioned',
+    name: 'Mentioned',
+    description: 'AI Visibility Web App',
+    tools: ['React.js', 'Node.js', 'Gemini API'],
+    station: 'Electronic City',
+    url: 'https://mentioned-virid.vercel.app/',
   },
   {
     id: 'lame-rides',
@@ -203,7 +211,7 @@ export default function SceneGate(){
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
         >
           <span className="label ts-label">Best Work</span>
-          <h2 className="ts-heading">Six projects, one route.</h2>
+          <h2 className="ts-heading">Seven projects, one route.</h2>
 
           <div className="ts-route">
             <div className="ts-route-line" aria-hidden="true" />
