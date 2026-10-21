@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import hushed from '../assets/graphics/hushed.webp';
 import wave from '../assets/graphics/wave.webp';
@@ -16,45 +16,58 @@ const DESIGNS = [
   { id: 'brush', src: brush, alt: 'Brush — poster study', top: 44, left: 60, rotate: -4, z: 4 },
 ];
 
+// Desktop: hover the section to reveal the prints, hover a print to lift it.
+// Touch: the same reveal on a tap ("Tap to see magic"), then tap a print to
+// bring it forward. Scrolling away resets it, so the reveal happens again.
 export default function GraphicGrid(){
   const [revealed, setRevealed] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
   const [hasHover, setHasHover] = useState(true);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
-    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    setHasHover(fine);
-    if (!fine) setRevealed(true); // touch devices: skip the discovery interaction, just show the grid
+    setHasHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
   }, []);
+
+  // Touch: put the prints away again once the section scrolls out of view.
+  useEffect(() => {
+    if (hasHover) return;
+    const el = sectionRef.current;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) { setRevealed(false); setHoveredId(null); }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasHover]);
 
   return (
     <section
       id="graphics"
-      className="grid-scene"
+      ref={sectionRef}
+      className={`grid-scene ${revealed ? 'is-revealed' : ''}`}
       onMouseEnter={() => hasHover && setRevealed(true)}
       onMouseLeave={() => { if (hasHover) { setRevealed(false); setHoveredId(null); } }}
+      onClick={() => { if (!hasHover && !revealed) setRevealed(true); }}
     >
       <motion.h2
         className="grid-title"
-        animate={{ opacity: revealed && hasHover ? 0.25 : 1 }}
+        animate={{ opacity: revealed ? 0.25 : 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         Cooked
       </motion.h2>
 
-      {/* Only for mouse users; touch screens see the grid straight away. */}
-      {hasHover && (
-        <motion.p
-          className="grid-hint"
-          animate={{ opacity: revealed ? 0 : 1, y: revealed ? 8 : 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        >
-          Hover to see magic
-        </motion.p>
-      )}
+      <motion.p
+        className="grid-hint"
+        animate={{ opacity: revealed ? 0 : 1, y: revealed ? 8 : 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        aria-hidden={revealed}
+      >
+        {hasHover ? 'Hover to see magic' : 'Tap to see magic'}
+      </motion.p>
 
       <div className={`grid-cards ${revealed ? 'is-revealed' : ''}`}>
-        {DESIGNS.map((d) => {
+        {DESIGNS.map((d, i) => {
           const isHovered = hoveredId === d.id;
           const isDimmed = hoveredId && !isHovered;
 
@@ -63,20 +76,29 @@ export default function GraphicGrid(){
               key={d.id}
               type="button"
               className="grid-card"
-              style={{ top: `${d.top}%`, left: `${d.left}%` }}
+              style={hasHover ? { top: `${d.top}%`, left: `${d.left}%` } : undefined}
               data-cursor="link"
-              onMouseEnter={() => setHoveredId(d.id)}
-              onMouseLeave={() => setHoveredId(null)}
+              aria-label={d.alt}
+              aria-pressed={hasHover ? undefined : isHovered}
+              onMouseEnter={() => hasHover && setHoveredId(d.id)}
+              onMouseLeave={() => hasHover && setHoveredId(null)}
+              onClick={(e) => {
+                if (hasHover) return;
+                e.stopPropagation();
+                setHoveredId(isHovered ? null : d.id);
+              }}
               animate={{
-                // A gentler tilt on touch screens, where the cards sit in a tight grid.
+                // A gentler tilt and lift on touch screens, where the prints sit in a tight grid.
                 rotate: isHovered ? 0 : hasHover ? d.rotate : d.rotate * 0.4,
-                scale: revealed ? (isHovered ? 1.35 : isDimmed ? 0.88 : 1) : 0.6,
+                scale: revealed ? (isHovered ? (hasHover ? 1.35 : 1.06) : isDimmed ? 0.88 : 1) : 0.6,
                 opacity: revealed ? (isDimmed ? 0.5 : 1) : 0,
+                y: revealed || hasHover ? 0 : 40,
                 zIndex: isHovered ? 20 : d.z,
               }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              // Touch: deal the prints in one after another.
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: !hasHover && revealed && !hoveredId ? i * 0.09 : 0 }}
             >
-              <img src={d.src} alt={d.alt} loading="lazy" />
+              <img src={d.src} alt="" loading="lazy" />
             </motion.button>
           );
         })}

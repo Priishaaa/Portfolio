@@ -84,4 +84,13 @@
     position: static;
     width: 100%;
   }
+
+  /* Before the tap: just the title and "Tap to see magic", filling the screen. */
+  .grid-scene:not(.is-revealed){
+    min-height: 75svh;
+    justify-content: center;
+    gap: 1rem;
+    cursor: pointer;
+  }
+  .grid-cards:not(.is-revealed){ display: none; }
 }
