@@ -52,6 +52,14 @@ import s4 from "../assets/projects/s4.webp";
   },
 ];
 
+// Phones: smaller prints tucked into the corners, clear of the centred name.
+const NARROW_HOME = {
+  1: { x: 22, y: 20 },
+  2: { x: 80, y: 23 },
+  3: { x: 20, y: 79 },
+  4: { x: 78, y: 76 },
+};
+
 const LERP = 0.08; // how quickly cards/spotlight catch up to target -- lower = laggier, more "magnetic"
 
 export default function Hero(){
@@ -65,27 +73,47 @@ export default function Hero(){
   const pointer = useRef({ x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, vx: 0 });
 
   const [active, setActive] = useState(false); // cursor is inside + has moved
-  const [enabled, setEnabled] = useState(false); // fine-pointer device, motion allowed
+  const [enabled, setEnabled] = useState(false); // motion allowed
+  const [isTouch, setIsTouch] = useState(false);
+  const [isNarrow, setIsNarrow] = useState(false);
 
   useEffect(() => {
     const isFine = window.matchMedia('(pointer: fine)').matches;
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!isFine || prefersReduced) return;
+    if (prefersReduced) return;
     setEnabled(true);
+    setIsTouch(!isFine);
+    setIsNarrow(window.matchMedia('(max-width: 780px)').matches);
 
     const hero = heroRef.current;
 
-    const handleMove = (e) => {
+    const track = (x, y) => {
       const rect = hero.getBoundingClientRect();
-      pointer.current.targetX = (e.clientX - rect.left) / rect.width;
-      pointer.current.targetY = (e.clientY - rect.top) / rect.height;
+      pointer.current.targetX = (x - rect.left) / rect.width;
+      pointer.current.targetY = (y - rect.top) / rect.height;
       setActive(true);
     };
 
+    // Mouse: the prints appear while the cursor is in the hero.
+    // Touch: they appear on the first touch, follow the finger, and stay
+    // until the hero scrolls out of view.
+    const handleMove = (e) => track(e.clientX, e.clientY);
     const handleLeave = () => setActive(false);
+    const handleTouch = (e) => track(e.touches[0].clientX, e.touches[0].clientY);
+    const handleTouchEnd = () => { pointer.current.targetX = 0.5; pointer.current.targetY = 0.5; };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) setActive(false);
+    });
 
-    hero.addEventListener('mousemove', handleMove);
-    hero.addEventListener('mouseleave', handleLeave);
+    if (isFine) {
+      hero.addEventListener('mousemove', handleMove);
+      hero.addEventListener('mouseleave', handleLeave);
+    } else {
+      hero.addEventListener('touchstart', handleTouch, { passive: true });
+      hero.addEventListener('touchmove', handleTouch, { passive: true });
+      hero.addEventListener('touchend', handleTouchEnd);
+      observer.observe(hero);
+    }
 
     const tick = (time) => {
       const p = pointer.current;
@@ -120,6 +148,10 @@ export default function Hero(){
     return () => {
       hero.removeEventListener('mousemove', handleMove);
       hero.removeEventListener('mouseleave', handleLeave);
+      hero.removeEventListener('touchstart', handleTouch);
+      hero.removeEventListener('touchmove', handleTouch);
+      hero.removeEventListener('touchend', handleTouchEnd);
+      observer.disconnect();
       cancelAnimationFrame(rafId.current);
     };
   }, []);
@@ -148,6 +180,18 @@ export default function Hero(){
           Creating experiences that invite people to explore.
         </motion.p>
 
+        {isTouch && (
+          <motion.p
+            className="hero-hint"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: active ? 0 : 1, y: active ? 8 : 0 }}
+            transition={{ delay: active ? 0 : 1.8, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            aria-hidden="true"
+          >
+            Touch to explore
+          </motion.p>
+        )}
+
         <motion.div
           className="hero-actions"
           initial={{ opacity: 0, y: 14 }}
@@ -166,9 +210,9 @@ export default function Hero(){
               ref={(el) => { cardRefs.current[card.id] = el; }}
               className="float-card"
               style={{
-                left: `${card.home.x}%`,
-                top: `${card.home.y}%`,
-                width: card.size,
+                left: `${(isNarrow ? NARROW_HOME[card.id] : card.home).x}%`,
+                top: `${(isNarrow ? NARROW_HOME[card.id] : card.home).y}%`,
+                width: isNarrow ? Math.round(card.size * 0.56) : card.size,
                 zIndex: Math.round(card.depth * 10),
                 opacity: 0.45 + card.depth * 0.5,
                 filter: `blur(${(1 - card.depth) * 2.5}px)`,

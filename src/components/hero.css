@@ -196,8 +196,15 @@
   color: var(--fg-dim);
 }
 
+.hero-hint{
+  margin: -1.25rem 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--fg-dim);
+}
+
 @media (max-width: 780px){
-  .hero-cards{ display: none; }
+  .hero .float-card{ padding: 0.5rem; border-radius: 14px; }
 }
 .float-card {
     overflow: hidden;
