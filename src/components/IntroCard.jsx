@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
 import Marquee from './Marquee';
 import './introCard.css';
@@ -25,8 +25,19 @@ export default function IntroCard(){
     offset: ['start start', 'end end'],
   });
 
-  const scrollRotateY = useTransform(scrollYProgress, [0, 0.5, 1], [-65, 0, 65]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.82, 1, 0.82]);
+  // Phones get a longer scroll (see introCard.css) and the card rests facing you
+  // through the middle of it, so it's readable instead of always mid-turn.
+  const [isNarrow] = useState(() => window.matchMedia('(max-width: 720px)').matches);
+  const scrollRotateY = useTransform(
+    scrollYProgress,
+    isNarrow ? [0, 0.3, 0.7, 1] : [0, 0.5, 1],
+    isNarrow ? [-65, 0, 0, 65] : [-65, 0, 65],
+  );
+  const scale = useTransform(
+    scrollYProgress,
+    isNarrow ? [0, 0.3, 0.7, 1] : [0, 0.5, 1],
+    isNarrow ? [0.82, 1, 1, 0.82] : [0.82, 1, 0.82],
+  );
   const opacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 1, 1, 0]);
 
   const handleMove = (e) => {

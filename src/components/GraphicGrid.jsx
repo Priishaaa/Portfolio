@@ -36,19 +36,22 @@ export default function GraphicGrid(){
     >
       <motion.h2
         className="grid-title"
-        animate={{ opacity: revealed ? 0.25 : 1 }}
+        animate={{ opacity: revealed && hasHover ? 0.25 : 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         Cooked
       </motion.h2>
 
-      <motion.p
-        className="grid-hint"
-        animate={{ opacity: revealed ? 0 : 1, y: revealed ? 8 : 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      >
-        Hover to see magic
-      </motion.p>
+      {/* Only for mouse users; touch screens see the grid straight away. */}
+      {hasHover && (
+        <motion.p
+          className="grid-hint"
+          animate={{ opacity: revealed ? 0 : 1, y: revealed ? 8 : 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        >
+          Hover to see magic
+        </motion.p>
+      )}
 
       <div className={`grid-cards ${revealed ? 'is-revealed' : ''}`}>
         {DESIGNS.map((d) => {
@@ -65,7 +68,8 @@ export default function GraphicGrid(){
               onMouseEnter={() => setHoveredId(d.id)}
               onMouseLeave={() => setHoveredId(null)}
               animate={{
-                rotate: isHovered ? 0 : d.rotate,
+                // A gentler tilt on touch screens, where the cards sit in a tight grid.
+                rotate: isHovered ? 0 : hasHover ? d.rotate : d.rotate * 0.4,
                 scale: revealed ? (isHovered ? 1.35 : isDimmed ? 0.88 : 1) : 0.6,
                 opacity: revealed ? (isDimmed ? 0.5 : 1) : 0,
                 zIndex: isHovered ? 20 : d.z,

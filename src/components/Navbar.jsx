@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import './navbar.css';
 
 const LINKS = [
@@ -13,6 +13,15 @@ const LINKS = [
 export default function Navbar(){
   const [scrolled, setScrolled] = useState(false);
   const [activeHref, setActiveHref] = useState('#top');
+  // Phones: the links live in a drop-down sheet under the pill.
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -45,6 +54,7 @@ export default function Navbar(){
 
   const handleClick = (e, href) => {
     e.preventDefault();
+    setMenuOpen(false);
     const el = document.querySelector(href);
     if (!el) return;
     if (window.__lenis) {
@@ -80,7 +90,54 @@ export default function Navbar(){
             </li>
           ))}
         </ul>
+
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-expanded={menuOpen}
+          aria-controls="nav-sheet"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          <span className="nav-toggle-label">{menuOpen ? 'Close' : 'Menu'}</span>
+          <span className={`nav-toggle-icon ${menuOpen ? 'is-open' : ''}`} aria-hidden="true">
+            <span />
+            <span />
+          </span>
+        </button>
       </nav>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            id="nav-sheet"
+            className="nav-sheet"
+            aria-label="Primary (mobile)"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <ul>
+              {LINKS.map((l, i) => (
+                <motion.li
+                  key={l.href}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.04 * i, duration: 0.3 }}
+                >
+                  <a
+                    href={l.href}
+                    className={activeHref === l.href ? 'is-active' : ''}
+                    onClick={(e) => handleClick(e, l.href)}
+                  >
+                    {l.label}
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

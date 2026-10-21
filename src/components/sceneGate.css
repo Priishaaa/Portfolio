@@ -372,6 +372,18 @@
   margin-top: 6px;
 }
 
+/* Phones: the board takes the full width; the arrows sit side by side under it. */
 @media (max-width: 640px){
-  .ts-stage{ flex-direction: column; }
+  .ts-stage{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 0.75rem;
+  }
+  .ts-platform{ grid-column: 1 / -1; grid-row: 1; }
+  .ts-arrow{ grid-row: 2; width: 52px; height: 52px; }
+  .ts-arrow-left{ justify-self: end; }
+  .ts-arrow-right{ justify-self: start; }
+  .ts-route{ gap: 0.25rem 0; }
+  .ts-route-stop{ padding: 0.25rem 0.4rem; }
+  .ts-heading{ font-size: 1.75rem; }
 }

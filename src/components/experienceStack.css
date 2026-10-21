@@ -210,3 +210,11 @@
 @media (max-width: 780px){
   .best-work-hook-wrap{ display: none; }
 }
+
+@media (max-width: 520px){
+  .exp-scene{ padding: 6.5rem 0 5.5rem; }
+  /* leave room on the right for the back card's offset and the date tags */
+  .exp-stack{ width: calc(100% - 28px); margin: 0; }
+  .exp-corner-tag{ right: 8px; top: -14px; }
+  .exp-card{ padding: 1.1rem 1.15rem; }
+}

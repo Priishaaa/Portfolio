@@ -109,6 +109,10 @@
 
 @media (max-width: 720px){
   .intro-node{ display: none; }
+  /* more scroll room, so the turn isn't a flick and the card can rest facing you */
+  .intro-card-scene{ height: 230vh; }
+  .intro-card{ min-height: min(520px, 68svh); }
+  .intro-card-skills{ margin: 2rem -2rem -2rem; }
 }
 
 .intro-card-eyebrow{

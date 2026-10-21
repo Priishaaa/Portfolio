@@ -63,20 +63,21 @@
 @media (hover: none){
   .grid-scene{
     flex-direction: column;
-    gap: 3rem;
-    padding: clamp(4rem, 10vw, 6rem) clamp(1.25rem, 5vw, 3rem);
+    gap: 2rem;
+    padding: clamp(4.5rem, 12vw, 6rem) 1.5rem;
     height: auto;
     min-height: auto;
   }
 
-  .grid-title{ position: static; font-size: clamp(2.4rem, 12vw, 4rem); }
+  .grid-title{ position: static; margin: 0; font-size: clamp(2.4rem, 12vw, 4rem); }
 
   .grid-cards{
     position: static;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 1.1rem;
     width: 100%;
+    max-width: 520px;
   }
 
   .grid-card{

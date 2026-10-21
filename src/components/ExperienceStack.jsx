@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import './experienceStack.css';
 
@@ -31,20 +31,34 @@ const EXPERIENCES = [
   },
 ];
 
-function ExperienceCard({ exp, expandedId, setExpandedId, hasHover }){
+function ExperienceCard({ exp, expandedId, setExpandedId, hasHover, offsetScale, onHeight }){
   const isExpanded = expandedId === exp.id;
   const isDimmed = expandedId && !isExpanded;
+  const ref = useRef(null);
+
+  // Report this card's height, so the stack can grow to fit it when it's open.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => onHeight(exp.id, el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [exp.id, onHeight]);
 
   const toggle = () => setExpandedId(isExpanded ? null : exp.id);
+  // Phones: a smaller fan-out, so the back card doesn't spill past the screen edge.
+  const left = exp.base.left * offsetScale;
+  const top = exp.base.top * offsetScale;
 
   const target = isExpanded
     ? { x: 0, y: 0, rotate: 0, scale: 1.04, zIndex: 30, opacity: 1 }
     : isDimmed
-      ? { x: exp.base.left + 10, y: exp.base.top + 16, rotate: exp.base.rotate * 1.4, scale: 0.92, zIndex: 5, opacity: 0.55 }
-      : { x: exp.base.left, y: exp.base.top, rotate: exp.base.rotate, scale: 1, zIndex: 10, opacity: 1 };
+      ? { x: left + 10 * offsetScale, y: top + 16, rotate: exp.base.rotate * 1.4, scale: 0.92, zIndex: 5, opacity: 0.55 }
+      : { x: left, y: top, rotate: exp.base.rotate, scale: 1, zIndex: 10, opacity: 1 };
 
   return (
     <motion.article
+      ref={ref}
       className={`exp-card exp-card-${exp.theme}`}
       animate={target}
       transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
@@ -108,10 +122,21 @@ function BestWorkHint(){
 export default function ExperienceStack(){
   const [expandedId, setExpandedId] = useState(null);
   const [hasHover, setHasHover] = useState(true);
+  const [isNarrow, setIsNarrow] = useState(false);
+  const [heights, setHeights] = useState({});
 
   useEffect(() => {
     setHasHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    const mq = window.matchMedia('(max-width: 520px)');
+    const update = () => setIsNarrow(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
   }, []);
+
+  const onHeight = useRef((id, h) => setHeights((prev) => (prev[id] === h ? prev : { ...prev, [id]: h }))).current;
+  // Open card's height (it scales to 1.04) plus room for the card peeking behind it.
+  const openHeight = expandedId && heights[expandedId] ? Math.ceil(heights[expandedId] * 1.04) + 48 : undefined;
 
   return (
     <section id="work" className="exp-scene">
@@ -142,6 +167,7 @@ export default function ExperienceStack(){
 
         <motion.div
           className={`exp-stack ${expandedId ? 'has-expanded' : ''}`}
+          style={openHeight ? { height: openHeight } : undefined}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -154,6 +180,8 @@ export default function ExperienceStack(){
               expandedId={expandedId}
               setExpandedId={setExpandedId}
               hasHover={hasHover}
+              offsetScale={isNarrow ? 0.4 : 1}
+              onHeight={onHeight}
             />
           ))}
         </motion.div>
