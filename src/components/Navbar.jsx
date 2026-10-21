@@ -96,9 +96,9 @@ export default function Navbar(){
           className="nav-toggle"
           aria-expanded={menuOpen}
           aria-controls="nav-sheet"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           onClick={() => setMenuOpen((o) => !o)}
         >
-          <span className="nav-toggle-label">{menuOpen ? 'Close' : 'Menu'}</span>
           <span className={`nav-toggle-icon ${menuOpen ? 'is-open' : ''}`} aria-hidden="true">
             <span />
             <span />

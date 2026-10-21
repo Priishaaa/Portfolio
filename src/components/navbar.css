@@ -83,8 +83,7 @@
 .nav-toggle{
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.45rem 0.4rem 0.45rem 0.9rem;
+  padding: 0.3rem;
   border-radius: 999px;
   color: var(--fg);
   font-size: 0.8rem;
@@ -94,8 +93,8 @@
 
 .nav-toggle-icon{
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(242, 240, 236, 0.08);
 }
@@ -110,10 +109,10 @@
   transition: transform 0.35s var(--ease), top 0.35s var(--ease);
 }
 
-.nav-toggle-icon span:first-child{ top: 11px; }
-.nav-toggle-icon span:last-child{ top: 16px; }
-.nav-toggle-icon.is-open span:first-child{ top: 13.5px; transform: rotate(45deg); }
-.nav-toggle-icon.is-open span:last-child{ top: 13.5px; transform: rotate(-45deg); }
+.nav-toggle-icon span:first-child{ top: 13px; }
+.nav-toggle-icon span:last-child{ top: 18px; }
+.nav-toggle-icon.is-open span:first-child{ top: 15.5px; transform: rotate(45deg); }
+.nav-toggle-icon.is-open span:last-child{ top: 15.5px; transform: rotate(-45deg); }
 
 .nav-sheet{
   margin-top: 0.5rem;
