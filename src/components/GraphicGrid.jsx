@@ -76,7 +76,10 @@ export default function GraphicGrid(){
               key={d.id}
               type="button"
               className="grid-card"
-              style={hasHover ? { top: `${d.top}%`, left: `${d.left}%` } : undefined}
+              // Touch: grow from the outer corner, so a tapped print enlarges into the grid, not off-screen.
+              style={hasHover
+                ? { top: `${d.top}%`, left: `${d.left}%` }
+                : { originX: i % 2 === 0 ? 0 : 1, originY: i < 2 ? 0 : 1 }}
               data-cursor="link"
               aria-label={d.alt}
               aria-pressed={hasHover ? undefined : isHovered}
@@ -90,13 +93,18 @@ export default function GraphicGrid(){
               animate={{
                 // A gentler tilt and lift on touch screens, where the prints sit in a tight grid.
                 rotate: isHovered ? 0 : hasHover ? d.rotate : d.rotate * 0.4,
-                scale: revealed ? (isHovered ? (hasHover ? 1.35 : 1.06) : isDimmed ? 0.88 : 1) : 0.6,
-                opacity: revealed ? (isDimmed ? 0.5 : 1) : 0,
+                scale: revealed ? (isHovered ? (hasHover ? 1.35 : 1.32) : isDimmed ? 0.88 : 1) : 0.6,
+                opacity: revealed ? (isDimmed ? (hasHover ? 0.5 : 0.3) : 1) : 0,
                 y: revealed || hasHover ? 0 : 40,
                 zIndex: isHovered ? 20 : d.z,
               }}
               // Touch: deal the prints in one after another.
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: !hasHover && revealed && !hoveredId ? i * 0.09 : 0 }}
+              // A tapped print glides up rather than snapping.
+              transition={{
+                duration: hasHover ? 0.5 : 0.7,
+                ease: [0.16, 1, 0.3, 1],
+                delay: !hasHover && revealed && !hoveredId ? i * 0.09 : 0,
+              }}
             >
               <img src={d.src} alt="" loading="lazy" />
             </motion.button>
