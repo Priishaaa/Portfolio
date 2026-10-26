@@ -8,7 +8,6 @@ const STATIONS = [
   { id: 'work', label: 'Work' },
   { id: 'best-work', label: 'Metro' },
   { id: 'graphics', label: 'Cooked' },
-  { id: 'awards', label: 'Awards' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ];
