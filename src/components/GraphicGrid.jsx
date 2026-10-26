@@ -16,14 +16,17 @@ const DESIGNS = [
   { id: 'brush', src: brush, alt: 'Brush — poster study', top: 44, left: 60, rotate: -4, z: 4 },
 ];
 
-// Desktop: hover the section to reveal the prints, hover a print to lift it.
+// Desktop: hover the section to reveal the prints, hover a print to lift it,
+// drag one to toss it somewhere else on the table.
 // Touch: the same reveal on a tap ("Tap to see magic"), then tap a print to
-// bring it forward. Scrolling away resets it, so the reveal happens again.
+// bring it forward, or flick it sideways and it springs back.
+// Scrolling away resets it, so the reveal happens again.
 export default function GraphicGrid(){
   const [revealed, setRevealed] = useState(false);
   const [hoveredId, setHoveredId] = useState(null);
   const [hasHover, setHasHover] = useState(true);
   const sectionRef = useRef(null);
+  const dragged = useRef(false);
 
   useEffect(() => {
     setHasHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
@@ -81,21 +84,28 @@ export default function GraphicGrid(){
                 ? { top: `${d.top}%`, left: `${d.left}%` }
                 : { originX: i % 2 === 0 ? 0 : 1, originY: i < 2 ? 0 : 1 }}
               data-cursor="link"
+              data-cursor-label={hasHover ? 'Drag' : undefined}
               aria-label={d.alt}
               aria-pressed={hasHover ? undefined : isHovered}
               onMouseEnter={() => hasHover && setHoveredId(d.id)}
               onMouseLeave={() => hasHover && setHoveredId(null)}
-              onClick={(e) => {
-                if (hasHover) return;
-                e.stopPropagation();
-                setHoveredId(isHovered ? null : d.id);
-              }}
+              onTap={() => { if (!hasHover && !dragged.current) setHoveredId(isHovered ? null : d.id); }}
+              onDragStart={() => { dragged.current = true; }}
+              onDragEnd={() => { setTimeout(() => { dragged.current = false; }, 50); }}
+              // Desktop: thrown with momentum, kept on the table. Touch: sideways
+              // only (so the page still scrolls) and it springs back into the grid.
+              drag={hasHover ? true : 'x'}
+              dragConstraints={hasHover ? sectionRef : { left: 0, right: 0 }}
+              dragElastic={hasHover ? 0.2 : 0.55}
+              dragTransition={{ power: 0.35, timeConstant: 260, bounceStiffness: 260, bounceDamping: 22 }}
+              whileDrag={{ scale: hasHover ? 1.4 : 1.1, rotate: 0, zIndex: 40, cursor: 'grabbing' }}
               animate={{
                 // A gentler tilt and lift on touch screens, where the prints sit in a tight grid.
                 rotate: isHovered ? 0 : hasHover ? d.rotate : d.rotate * 0.4,
                 scale: revealed ? (isHovered ? (hasHover ? 1.35 : 1.32) : isDimmed ? 0.88 : 1) : 0.6,
                 opacity: revealed ? (isDimmed ? (hasHover ? 0.5 : 0.3) : 1) : 0,
-                y: revealed || hasHover ? 0 : 40,
+                // Desktop leaves y alone, so a print stays where it was thrown.
+                ...(hasHover ? {} : { y: revealed ? 0 : 40 }),
                 zIndex: isHovered ? 20 : d.z,
               }}
               // Touch: deal the prints in one after another.
@@ -106,7 +116,7 @@ export default function GraphicGrid(){
                 delay: !hasHover && revealed && !hoveredId ? i * 0.09 : 0,
               }}
             >
-              <img src={d.src} alt="" loading="lazy" />
+              <img src={d.src} alt="" loading="lazy" draggable={false} />
             </motion.button>
           );
         })}

@@ -94,3 +94,6 @@
   }
   .grid-cards:not(.is-revealed){ display: none; }
 }
+
+/* Native image dragging would fight the toss. */
+.grid-card img{ -webkit-user-drag: none; user-select: none; pointer-events: none; }

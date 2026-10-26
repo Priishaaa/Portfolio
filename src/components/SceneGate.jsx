@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import './sceneGate.css';
 
 // Seven real projects, trimmed to what a recruiter needs at a glance --
@@ -163,6 +163,38 @@ function TrainIllustration(){
   );
 }
 
+// Bengaluru time for the platform board, ticking over each minute.
+function useBengaluruTime(){
+  const format = () => new Date().toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true,
+  });
+  const [time, setTime] = useState(format);
+  useEffect(() => {
+    const id = setInterval(() => setTime(format()), 10000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
+// A soft two-note "next station" chime, made in the browser (no audio file).
+function playChime(ctx){
+  const now = ctx.currentTime;
+  [[659.25, 0], [523.25, 0.3]].forEach(([freq, at]) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, now + at);
+    gain.gain.linearRampToValueAtTime(0.16, now + at + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + at + 0.9);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now + at);
+    osc.stop(now + at + 1);
+  });
+}
+
+const SOUND_KEY = 'metro-sound';
+
 // A click-triggered gate -- "Scene?" + a button. Click it and the doors
 // slide apart to reveal the train showcase behind them, in the same
 // section (not a separate page further down). Scrolling past afterwards
@@ -171,8 +203,28 @@ export default function SceneGate(){
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [inView, setInView] = useState(false);
+  const [hasHover, setHasHover] = useState(true);
+  const [soundOn, setSoundOn] = useState(false);
+  const audioRef = useRef(null);
+  const touchStart = useRef(null);
   const sectionRef = useRef(null);
+  const reduceMotion = useReducedMotion();
+  const time = useBengaluruTime();
   const project = PROJECTS[index];
+
+  useEffect(() => {
+    setHasHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    // Sound stays off unless this visitor turned it on before.
+    try { setSoundOn(localStorage.getItem(SOUND_KEY) === 'on'); } catch { /* storage blocked */ }
+  }, []);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.4 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -197,6 +249,45 @@ export default function SceneGate(){
     if (i === index) return;
     setDirection(i > index ? 1 : -1);
     setIndex(i);
+  };
+
+  // Drive the train: arrow keys on a keyboard, a sideways swipe on a phone.
+  useEffect(() => {
+    if (!open || !inView) return;
+    const onKey = (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      go(e.key === 'ArrowRight' ? 1 : -1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, inView]);
+
+  const onTouchStart = (e) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  };
+  const onTouchEnd = (e) => {
+    if (!touchStart.current) return;
+    const dx = e.changedTouches[0].clientX - touchStart.current.x;
+    const dy = e.changedTouches[0].clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+  };
+
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSoundOn(next);
+    try { localStorage.setItem(SOUND_KEY, next ? 'on' : 'off'); } catch { /* storage blocked */ }
+    if (next) {
+      audioRef.current ??= new (window.AudioContext || window.webkitAudioContext)();
+      audioRef.current.resume();
+      playChime(audioRef.current);
+    }
+  };
+
+  // The chime plays as the train comes to a stop.
+  const onTrainStopped = (definition) => {
+    if (soundOn && audioRef.current && definition?.x === '0%') playChime(audioRef.current);
   };
 
   return (
@@ -241,7 +332,7 @@ export default function SceneGate(){
               &#8592;
             </button>
 
-            <div className="ts-platform">
+            <div className="ts-platform" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={project.id + '-welcome'}
@@ -253,6 +344,7 @@ export default function SceneGate(){
                 >
                   <span>Welcome to Namma Metro</span>
                   <span className="ts-welcome-next">Next destination: {project.station}</span>
+                  <span className="ts-clock" aria-label={`Bengaluru time ${time}`}>{time}</span>
                 </motion.div>
               </AnimatePresence>
 
@@ -304,12 +396,54 @@ export default function SceneGate(){
                 </AnimatePresence>
               </div>
 
-              <TrainIllustration />
+              {/* The train leaves the platform and the next one pulls in, slowing to a stop. */}
+              <div className="ts-train-clip">
+                <AnimatePresence mode="wait" custom={direction} initial={false}>
+                  <motion.div
+                    key={project.id}
+                    className="ts-train-run"
+                    initial={reduceMotion ? false : { x: direction > 0 ? '105%' : '-105%' }}
+                    animate={{ x: '0%' }}
+                    exit={reduceMotion ? undefined : { x: direction > 0 ? '-105%' : '105%', transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45] } }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    onAnimationComplete={onTrainStopped}
+                  >
+                    <TrainIllustration />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
               <div className="ts-track" aria-hidden="true" />
             </div>
 
             <button type="button" className="ts-arrow ts-arrow-right" onClick={() => go(1)} aria-label="Next project" data-cursor="link">
               &#8594;
+            </button>
+          </div>
+
+          <div className="ts-controls">
+            <span className="ts-ride-hint">
+              {hasHover ? (
+                <>Ride with <kbd>&larr;</kbd> <kbd>&rarr;</kbd></>
+              ) : (
+                'Swipe the platform to ride'
+              )}
+            </span>
+            <button
+              type="button"
+              className={`ts-sound ${soundOn ? 'is-on' : ''}`}
+              onClick={toggleSound}
+              aria-pressed={soundOn}
+              data-cursor="link"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+                {soundOn ? (
+                  <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                ) : (
+                  <path d="m16 9 5 6m0-6-5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                )}
+              </svg>
+              {soundOn ? 'Chime on' : 'Chime off'}
             </button>
           </div>
         </motion.div>
