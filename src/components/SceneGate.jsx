@@ -204,7 +204,6 @@ export default function SceneGate(){
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [inView, setInView] = useState(false);
-  const [hasHover, setHasHover] = useState(true);
   const [soundOn, setSoundOn] = useState(false);
   const audioRef = useRef(null);
   const touchStart = useRef(null);
@@ -214,7 +213,6 @@ export default function SceneGate(){
   const project = PROJECTS[index];
 
   useEffect(() => {
-    setHasHover(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
     // Sound stays off unless this visitor turned it on before.
     try { setSoundOn(localStorage.getItem(SOUND_KEY) === 'on'); } catch { /* storage blocked */ }
   }, []);
@@ -421,13 +419,6 @@ export default function SceneGate(){
           </div>
 
           <div className="ts-controls">
-            <span className="ts-ride-hint">
-              {hasHover ? (
-                <>Ride with <kbd>&larr;</kbd> <kbd>&rarr;</kbd></>
-              ) : (
-                'Swipe the platform to ride'
-              )}
-            </span>
             <button
               type="button"
               className={`ts-sound ${soundOn ? 'is-on' : ''}`}
