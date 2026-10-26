@@ -176,6 +176,25 @@ function useBengaluruTime(){
   return time;
 }
 
+// A soft two-note "next station" chime, made in the browser (no audio file).
+function playChime(ctx){
+  const now = ctx.currentTime;
+  [[659.25, 0], [523.25, 0.3]].forEach(([freq, at]) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, now + at);
+    gain.gain.linearRampToValueAtTime(0.16, now + at + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + at + 0.9);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now + at);
+    osc.stop(now + at + 1);
+  });
+}
+
+const SOUND_KEY = 'metro-sound';
+
 // A click-triggered gate -- "Scene?" + a button. Click it and the doors
 // slide apart to reveal the train showcase behind them, in the same
 // section (not a separate page further down). Scrolling past afterwards
@@ -185,11 +204,18 @@ export default function SceneGate(){
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [inView, setInView] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
+  const audioRef = useRef(null);
   const touchStart = useRef(null);
   const sectionRef = useRef(null);
   const reduceMotion = useReducedMotion();
   const time = useBengaluruTime();
   const project = PROJECTS[index];
+
+  useEffect(() => {
+    // Sound is on unless this visitor muted it before.
+    try { setSoundOn(localStorage.getItem(SOUND_KEY) !== 'off'); } catch { /* storage blocked */ }
+  }, []);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -246,6 +272,34 @@ export default function SceneGate(){
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
   };
 
+  // Browsers only allow sound after a click, so the audio starts on the
+  // "Lessgooo" click (or the sound button), never on page load.
+  const startAudio = () => {
+    audioRef.current ??= new (window.AudioContext || window.webkitAudioContext)();
+    audioRef.current.resume();
+    return audioRef.current;
+  };
+
+  const openDoors = () => {
+    setOpen(true);
+    // A welcome chime as the doors finish opening.
+    if (soundOn) {
+      const ctx = startAudio();
+      setTimeout(() => playChime(ctx), 1000);
+    }
+  };
+
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSoundOn(next);
+    try { localStorage.setItem(SOUND_KEY, next ? 'on' : 'off'); } catch { /* storage blocked */ }
+    if (next) playChime(startAudio());
+  };
+
+  // The chime plays as the train comes to a stop.
+  const onTrainStopped = (definition) => {
+    if (soundOn && audioRef.current && definition?.x === '0%') playChime(audioRef.current);
+  };
 
   return (
     <section id="best-work" className="gate-scene" ref={sectionRef}>
@@ -363,6 +417,7 @@ export default function SceneGate(){
                     animate={{ x: '0%' }}
                     exit={reduceMotion ? undefined : { x: direction > 0 ? '-105%' : '105%', transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45] } }}
                     transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    onAnimationComplete={onTrainStopped}
                   >
                     <TrainIllustration />
                   </motion.div>
@@ -373,6 +428,27 @@ export default function SceneGate(){
 
             <button type="button" className="ts-arrow ts-arrow-right" onClick={() => go(1)} aria-label="Next project" data-cursor="link">
               &#8594;
+            </button>
+          </div>
+
+          <div className="ts-controls">
+            <button
+              type="button"
+              className={`ts-sound ${soundOn ? 'is-on' : ''}`}
+              onClick={toggleSound}
+              aria-pressed={soundOn}
+              title={soundOn ? 'Mute the station chime' : 'Turn the station chime on'}
+              data-cursor="link"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" />
+                {soundOn ? (
+                  <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                ) : (
+                  <path d="m16 9 5 6m0-6-5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                )}
+              </svg>
+              Sound
             </button>
           </div>
         </motion.div>
@@ -403,7 +479,7 @@ export default function SceneGate(){
         <motion.button
           type="button"
           className="gate-button"
-          onClick={() => setOpen(true)}
+          onClick={openDoors}
           data-cursor="link"
           animate={{ scale: [1, 1.06, 1], boxShadow: [
             '0 0 0 0 rgba(176,141,90,0.5)',
